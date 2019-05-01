@@ -8,3 +8,6 @@ jdk:
   - oraclejdk8
   - oraclejdk9
   - openjdk8
+
+script:
+  - mvn test -B -DrepoToken=$COVERALLS_TOKEN
