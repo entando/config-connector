@@ -10,4 +10,4 @@ jdk:
   - openjdk8
 
 script:
-  - mvn test -B -DrepoToken=$COVERALLS_TOKEN
+  - mvn clean test jacoco:report coveralls:report -DrepoToken=$COVERALLS_TOKEN

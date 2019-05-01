@@ -1,7 +1,9 @@
 # Entando Config Service Connector
-This library is used to integrate with Entando ConfigService without the need to implement the communication to the service.
 
 [![Build Status](https://travis-ci.org/entando/config-connector.svg?branch=master)](https://travis-ci.org/entando/config-connector)
+[![Coverage Status](https://coveralls.io/repos/github/entando/config-connector/badge.svg?branch=master)](https://coveralls.io/github/entando/config-connector?branch=master)
+
+This library is used to integrate with Entando ConfigService without the need to implement the communication to the service.
 
 ## Install
 
