@@ -1,6 +1,6 @@
 # Entando Config Service Connector
 
-[![Build Status](https://jenkins.entandocloud.com/buildStatus/icon?job=de-config-connector-master&build=1)](https://jenkins.entandocloud.com/job/de-config-connector-master/1/)
+[![Build Status](https://jenkins.entandocloud.com/buildStatus/icon?job=de-config-connector-master)](https://jenkins.entandocloud.com/job/de-config-connector-master/)
 [![Coverage Status](https://coveralls.io/repos/github/entando/config-connector/badge.svg?branch=master)](https://coveralls.io/github/entando/config-connector?branch=master)
 
 This library is used to integrate with Entando ConfigService without the need to implement the communication to the service.
