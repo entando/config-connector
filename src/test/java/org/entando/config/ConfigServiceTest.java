@@ -1,10 +1,12 @@
 package org.entando.config;
 
 import com.github.tomakehurst.wiremock.client.WireMock;
+import com.github.tomakehurst.wiremock.junit.WireMockRule;
 import com.google.gson.FieldNamingPolicy;
 import com.google.gson.Gson;
 import com.google.gson.GsonBuilder;
 import lombok.Value;
+import org.junit.Rule;
 import org.junit.Test;
 import org.junit.runner.RunWith;
 import org.springframework.cloud.contract.wiremock.AutoConfigureWireMock;
@@ -14,13 +16,15 @@ import org.springframework.test.context.junit4.SpringRunner;
 import java.time.Instant;
 
 import static com.github.tomakehurst.wiremock.client.WireMock.*;
+import static com.github.tomakehurst.wiremock.core.WireMockConfiguration.wireMockConfig;
+import static java.lang.String.format;
 import static org.assertj.core.api.Assertions.assertThat;
 
 @ActiveProfiles("test")
 @RunWith(SpringRunner.class)
-@AutoConfigureWireMock(port = 8099)
 public class ConfigServiceTest {
-
+    @Rule
+    public WireMockRule wireMockRule = new WireMockRule(wireMockConfig().dynamicPort().dynamicHttpsPort());
     private static final Gson gson = new GsonBuilder()
             .setFieldNamingPolicy(FieldNamingPolicy.LOWER_CASE_WITH_UNDERSCORES)
             .create();
@@ -29,14 +33,14 @@ public class ConfigServiceTest {
     public void testGetConfigAndCache() {
         final String clientId = "my-cliend-id";
         final String clientSecret = "my-ultra-secret-secret";
-        final String configServiceUri = "http://localhost:8099";
-        final String accessTokenUri = "http://localhost:8099/auth/realms/realm/protocol/openid-connect/token";
+        final String configServiceUri = format("http://localhost:%d",wireMockRule.port());
+        final String accessTokenUri = format("http://localhost:%d/auth/realms/realm/protocol/openid-connect/token",wireMockRule.port());
 
         final ConfigService<TestCustomConfig> configService = new ConfigService<>(clientId,
                 clientSecret, accessTokenUri, configServiceUri, TestCustomConfig.class);
 
         stubAuth();
-        stubFor(WireMock.get(urlEqualTo(String.format("/config/%s", clientId)))
+        stubFor(WireMock.get(urlEqualTo(format("/config/%s", clientId)))
                 .willReturn(aResponse().withStatus(200).withHeader("Content-Type", "application/json")
                         .withBody("{ \"payload\": { \"name\": \"this is a sample name\", \"integer\": 122, \"active\": false } }")));
 
@@ -46,7 +50,7 @@ public class ConfigServiceTest {
         assertThat(config.isActive()).isFalse();
 
         stubAuth();
-        stubFor(WireMock.get(urlEqualTo(String.format("/config/%s", clientId)))
+        stubFor(WireMock.get(urlEqualTo(format("/config/%s", clientId)))
                 .willReturn(aResponse().withStatus(200).withHeader("Content-Type", "application/json")
                         .withBody("{ \"payload\": { \"name\": \"this is another sample name\", \"integer\": 122, \"active\": false } }")));
 
@@ -56,7 +60,7 @@ public class ConfigServiceTest {
         assertThat(config.isActive()).isFalse();
 
         stubAuth();
-        stubFor(WireMock.put(urlEqualTo(String.format("/config/%s", clientId)))
+        stubFor(WireMock.put(urlEqualTo(format("/config/%s", clientId)))
                 .withRequestBody(containing("\"name\":\"this is another sample name\""))
                 .withRequestBody(containing("\"integer\":18748"))
                 .withRequestBody(containing("\"active\":true"))
@@ -69,7 +73,7 @@ public class ConfigServiceTest {
         configService.updateConfig(config);
 
         stubAuth();
-        stubFor(WireMock.get(urlEqualTo(String.format("/config/%s", clientId)))
+        stubFor(WireMock.get(urlEqualTo(format("/config/%s", clientId)))
                 .willReturn(aResponse().withStatus(200).withHeader("Content-Type", "application/json")
                         .withBody("{ \"payload\": { \"name\": \"this is another sample name\", \"integer\": 18748, \"active\": true } }")));
 
